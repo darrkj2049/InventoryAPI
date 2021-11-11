@@ -1,0 +1,59 @@
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>inventory</title>
+        
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+        
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+        <script>
+        function goBack() { window.history.back();}
+        </script>
+        <style>
+            img {
+              max-width: 100%;
+              height: auto;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="jumbotron text-center">
+            <h1>Details of <%= name %></h1>
+        </div>
+        <div class="container-fluid">
+            <div class="well">
+            <div class="row">
+                
+                    <img src="data:image/;base64, "><br>
+                
+            </div>
+            <div class="row">
+                    <p>Type: <%= type %></p><br>
+                    <p>Quantity: <%= quantity %></p><br>
+                    <p>Street: <%= street %></p><br>
+                    <p>Building: <%= building %></p><br>
+                    <p>Country: <%= country %></p><br>
+                    <p>Zipcode: <%= zipcode %></p><br>
+                    <p>GPS: <%= gps %></p><br>
+
+    
+                <p>Manager: <%= manager %></p><br>
+                
+                
+            </div>
+            </div>
+            <div class="row ml-md-auto">
+
+                <a href="/edit?_id=<%= id %>" class="btn btn-primary" role="button">Edit</a>
+                <a href="/delete?_id=<%= DEL %>" class="btn btn-primary" role="button">Delete</a>
+                
+                <button class="btn btn-primary" onclick="goBack()">Back</button>
+            </div>
+            <br>            
+        </div>
+    </body>
+</html>
