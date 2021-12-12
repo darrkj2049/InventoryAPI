@@ -56,4 +56,23 @@ module.exports = class MongoDBHelper {
         }
     }
 
+    //modify Inventory records
+    modifyInventory = async (id, Inventory) => {
+        id = new ObjectId(id);
+        try{
+            return await this.client.db(this.databaseName).collection(this.dataCollectionName).updateOne({_id: id}, {$set: Inventory});
+        }catch(e){
+            console.error(e);
+        }
+    }
+
+    //get User by name
+    getUserByName = async (name) => {
+        try{
+            return await this.client.db(this.databaseName).collection(this.dataCollectionName).find({name: name}).toArray();
+        }catch(e){
+            console.error(e);
+        }
+    }
+
 }

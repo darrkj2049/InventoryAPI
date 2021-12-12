@@ -15,7 +15,7 @@ module.exports = class InventoryApi{
         this.app = express();
         
         this.dbHelper = new MongoDBHelper({uri: this.config.mongoDBuri, databaseName: this.config.databaseName, dataCollectionName: this.config.dataCollectionName});
-
+        this.loginHelper = new MongoDBHelper({uri: this.config.mongoDBuri, databaseName: this.config.databaseName, dataCollectionName: this.config.loginCollectionName});
         //this.dbHelper.getDatabaseList().then(dbObj => {
         //    //get database object
         //});
@@ -34,9 +34,25 @@ module.exports = class InventoryApi{
 
         //todo app route (post create) !important --> image upload -> base64 -> database
         this.app.post('/create', (req, res) => {
-            //const {name, inv_type, quantity, street, building, country, zipcode, latitude, longitude, photo}
+            // {
+            //     "_id" : new ObjectId(`${id}`),
+            //     "name" : "",
+            //     "type" : "",
+            //     "quantity" : "",
+            //     "photo" : "",
+            //     "photo_mimetype" : "",
+            //     "inventory_address" : {
+            //         "street" : "",
+            //         "building" : "",
+            //         "country" : "",
+            //         "zipcode" : "",
+            //         "latitude" : "",
+            //         "longitude" : "",
+            //     },
+            //     "manager" : "",
+            // }
         })
-        
+                
         this.app.use(express.urlencoded({extended: true}))
         this.app.use(express.json());
 
@@ -102,15 +118,29 @@ module.exports = class InventoryApi{
             const { username, password } = req.body;
 
             //connect to dabase and check 
+            this.loginHelper.getUserByUsername(username).then(user => {
+                if(user.length > 0){
+                    if(user[0].password === password){
+                        req.session.username = username;
+                        res.redirect('/home');
+                    }else{
+                        res.redirect('/login');
+                    }
+                }else{
+                    res.redirect('/login');
+                }
+            });
+            
 
             //todo remove hardcode testing account authentication
             //todo compare username/password with database user record
-            //testing session
-            if(username === 'demo' && password === ''){
-                req.session.username = username;
-                return res.redirect('/home');
-            }
-            return res.redirect('/login');
+
+            // //testing session
+            // if(username === 'demo' && password === ''){
+            //     req.session.username = username;
+            //     return res.redirect('/home');
+            // }
+            // return res.redirect('/login');
         });
 
         //start app
