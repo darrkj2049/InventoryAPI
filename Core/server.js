@@ -82,6 +82,20 @@ module.exports = class InventoryApi{
                 let inventoryObj = array[0];
                 res.render(path.join(__dirname, '../webComponent/details.html'), {name: inventoryObj.name, type: inventoryObj.type, quantity: inventoryObj.quantity, photo: inventoryObj.photo, photo_minetype: inventoryObj.photo_mimetype, street: inventoryObj.inventory_address.street, building: inventoryObj.inventory_address.building, country: inventoryObj.inventory_address.country, zipcode: inventoryObj.inventory_address.zipcode, gps: `[${inventoryObj.inventory_address.latitude},${inventoryObj.inventory_address.longitude}]`, manager: inventoryObj.manager, id: inventoryObj._id, DEL: `${inventoryObj._id}&owner=${inventoryObj.manager}`});
             })
+        });
+
+        this.app.get('/delete', this.auth, (req, res) => {
+            this.dbHelper.getInventoryById(req.query._id).then(array => {
+                let inventoryObj = array[0];
+                //check if the user is the owner
+                if(inventoryObj.manager == req.session.username){
+                    this.dbHelper.deleteInventoryById(req.query._id).then(result => {
+                        res.redirect('/home');
+                    });
+                }else{
+                    res.send("You are not the owner of this inventory<br><a href='/home'>back</a>");
+                }
+            })
         })
 
         this.app.get('/logout', this.auth, (req, res)=> {
@@ -150,7 +164,7 @@ module.exports = class InventoryApi{
                 //debuging method, send back the image to client
                 // res.send(`<img src="data:image/png;base64,${this.util.base64_encode(req.file.path)}"/>`);
                     inventoryItem.photo = this.util.base64_encode(req.file.path);
-                    inventoryItem.photo_minetype = req.file.mimetype;
+                    inventoryItem.photo_mimetype = req.file.mimetype;
 
                 //delete file after photo has been converted to base64 and insert to database
                 fs.unlink(req.file.path, (err) => {

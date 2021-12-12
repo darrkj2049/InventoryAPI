@@ -75,4 +75,14 @@ module.exports = class MongoDBHelper {
         }
     }
 
+    //deleteInventoryById
+    deleteInventoryById = async (id) => {
+        id = new ObjectId(id);
+        try{
+            return await this.client.db(this.databaseName).collection(this.dataCollectionName).deleteOne({_id: id});
+        }catch(e){
+            console.error(e);
+        }
+    }
+
 }
