@@ -30,27 +30,28 @@ module.exports = class InventoryApi{
         }
 
         //todo app route (get Create) (render the page that can create inventory items)
-
+        this.app.get('/create', this.auth, (req, res) => {
+            res.render('create.html');
+        })
 
         //todo app route (post create) !important --> image upload -> base64 -> database
         this.app.post('/create', (req, res) => {
-            // {
-            //     "_id" : new ObjectId(`${id}`),
-            //     "name" : "",
-            //     "type" : "",
-            //     "quantity" : "",
-            //     "photo" : "",
-            //     "photo_mimetype" : "",
-            //     "inventory_address" : {
-            //         "street" : "",
-            //         "building" : "",
-            //         "country" : "",
-            //         "zipcode" : "",
-            //         "latitude" : "",
-            //         "longitude" : "",
-            //     },
-            //     "manager" : "",
-            // }
+            const inventoryItem = {
+                name: req.body.name,
+                inv_type: req.body.inv_type,
+                quantity: req.body.quantity,
+                photo: req.body.photo,
+                photo_base64: req.body.photo_base64,
+                inventory_address = {
+                    street: req.body.street,
+                    building: req.body.building,
+                    country: req.body.country,
+                    zipcode: req.body.zipcode,
+                    coordinates: req.body.coordinates
+                },
+                manager: req.body.manager,
+            }
+            //const {name, inv_type, quantity, street, building, country, zipcode, latitude, longitude, photo}
         })
                 
         this.app.use(express.urlencoded({extended: true}))
@@ -142,6 +143,7 @@ module.exports = class InventoryApi{
             // }
             // return res.redirect('/login');
         });
+  
 
         //start app
         this.app.listen(this.config.serverPort, () => console.log('Listening on port ' + this.config.serverPort));
