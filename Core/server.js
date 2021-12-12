@@ -209,7 +209,8 @@ module.exports = class InventoryApi{
         
 
         //start app
-        this.app.listen(this.config.serverPort, () => console.log('Listening on port ' + this.config.serverPort));
+        //this.app.listen(this.config.serverPort, () => console.log('Listening on port ' + this.config.serverPort));
+        app.listen(process.env.PORT || 3000);
     }
 
 }
