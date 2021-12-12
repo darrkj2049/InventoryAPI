@@ -1,17 +1,18 @@
 const Config = require('./config');
 const express = require('express');
 const multer = require('multer');
-const upload = multer({dest: path.join(__dirname, 'uploads/')});
 const path = require('path');
 const session = require('express-session');
 const Util = require('./util');
+const fs = require('fs');
 
 const MongoDBHelper = require('../Helper/mongodbHelper');
+const upload = multer({dest: path.join(__dirname, '../uploads/')});
 
 module.exports = class InventoryApi{
     constructor(){
         //Load Util
-        this.util = new Util();
+        this.util = new Util(this);
         //Load Config
 		this.config = new Config();
         this.app = express();
@@ -79,7 +80,7 @@ module.exports = class InventoryApi{
         this.app.get('/details', this.auth, (req, res) => {
             this.dbHelper.getInventoryById(req.query._id).then(array => {
                 let inventoryObj = array[0];
-                res.render(path.join(__dirname, '../webComponent/details.html'), {name: inventoryObj.name, type: inventoryObj.type, quantity: inventoryObj.quantity, street: inventoryObj.inventory_address.street, building: inventoryObj.inventory_address.building, country: inventoryObj.inventory_address.country, zipcode: inventoryObj.inventory_address.zipcode, gps: `[${inventoryObj.inventory_address.latitude},${inventoryObj.inventory_address.longitude}]`, manager: inventoryObj.manager, id: inventoryObj._id, DEL: `${inventoryObj._id}&owner=${inventoryObj.manager}`});
+                res.render(path.join(__dirname, '../webComponent/details.html'), {name: inventoryObj.name, type: inventoryObj.type, quantity: inventoryObj.quantity, photo: inventoryObj.photo, photo_minetype: inventoryObj.photo_mimetype, street: inventoryObj.inventory_address.street, building: inventoryObj.inventory_address.building, country: inventoryObj.inventory_address.country, zipcode: inventoryObj.inventory_address.zipcode, gps: `[${inventoryObj.inventory_address.latitude},${inventoryObj.inventory_address.longitude}]`, manager: inventoryObj.manager, id: inventoryObj._id, DEL: `${inventoryObj._id}&owner=${inventoryObj.manager}`});
             })
         })
 
@@ -132,7 +133,8 @@ module.exports = class InventoryApi{
                 name: req.body.name,
                 type: req.body.inv_type,
                 quantity: req.body.quantity,
-                photo: req.file.buffer.toString('base64'),
+                photo: undefined,
+                photo_mimetype: undefined,
                 inventory_address: {
                     street: req.body.street,
                     building: req.body.building,
@@ -141,9 +143,24 @@ module.exports = class InventoryApi{
                     latitude: req.body.latitude,
                     longitude: req.body.longitude,
                 },
-                manager: req.body.manager,
+                manager: req.session.username,
             }
+            //user have uploaded a photo
+            if(req.file){
+                //debuging method, send back the image to client
+                // res.send(`<img src="data:image/png;base64,${this.util.base64_encode(req.file.path)}"/>`);
+                    inventoryItem.photo = this.util.base64_encode(req.file.path);
+                    inventoryItem.photo_minetype = req.file.mimetype;
 
+                //delete file after photo has been converted to base64 and insert to database
+                fs.unlink(req.file.path, (err) => {
+                    if(err) throw err;
+                });
+            }
+            //insert record to database
+            this.dbHelper.createInventory(inventoryItem).then(result => {
+                res.redirect('/home');
+            });
             //const {name, inv_type, quantity, street, building, country, zipcode, latitude, longitude, photo}
         });
         

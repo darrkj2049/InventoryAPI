@@ -1,17 +1,12 @@
-module.exports = class Util{
-    constructor(){
+const fs = require('fs');
 
+module.exports = class Util{
+    constructor(main){
+        this.main = main;
     }
 
-    // parseRecord2HTML(records){
-    //     let handler = new Promise((resolve, reject) => {
-    //         let htmlString = records.map((record) => {
-    //             return `<tr><td><a href="/details?_id=${record._id}">${record.name}</a></td><td style="display:none;"></td><td style="display:none;"></td></tr>`;
-    //         });
-    //         console.log(htmlString);
-    //         return resolve(htmlString);
-    //     })
-    //     return handler;
-    // }
-    
+    base64_encode(file) {
+        var bitmap = fs.readFileSync(file);
+        return new Buffer.from(bitmap).toString('base64');
+    }
 }
