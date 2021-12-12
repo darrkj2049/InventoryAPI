@@ -1,5 +1,7 @@
 const Config = require('./config');
 const express = require('express');
+const multer = require('multer');
+const upload = multer({dest: path.join(__dirname, 'uploads/')});
 const path = require('path');
 const session = require('express-session');
 const Util = require('./util');
@@ -125,13 +127,12 @@ module.exports = class InventoryApi{
         })
 
         //todo app route (post create) !important --> image upload -> base64 -> database
-        this.app.post('/create', (req, res) => {
+        this.app.post('/create', upload.single('photo'), (req, res) => {
             let inventoryItem = {
                 name: req.body.name,
                 type: req.body.inv_type,
                 quantity: req.body.quantity,
-                photo: req.body.photo,
-                photo_mimetype : req.body.photo_mimetype,
+                photo: req.file.buffer.toString('base64'),
                 inventory_address: {
                     street: req.body.street,
                     building: req.body.building,
