@@ -118,7 +118,7 @@ module.exports = class InventoryApi{
             // return res.redirect('/login');
         });
   
-        
+ 
         //todo app route (get Create) (render the page that can create inventory items)
         this.app.get('/create', this.auth, (req, res) => {
             res.render(path.join(__dirname, '../webComponent/create.html'));
@@ -126,21 +126,23 @@ module.exports = class InventoryApi{
 
         //todo app route (post create) !important --> image upload -> base64 -> database
         this.app.post('/create', (req, res) => {
-            const inventoryItem = {
+            let inventoryItem = {
                 name: req.body.name,
-                inv_type: req.body.inv_type,
+                type: req.body.inv_type,
                 quantity: req.body.quantity,
                 photo: req.body.photo,
-                photo_base64: req.body.photo_base64,
+                photo_mimetype : req.body.photo_mimetype,
                 inventory_address: {
                     street: req.body.street,
                     building: req.body.building,
                     country: req.body.country,
                     zipcode: req.body.zipcode,
-                    coordinates: req.body.coordinates
+                    latitude: req.body.latitude,
+                    longitude: req.body.longitude,
                 },
                 manager: req.body.manager,
             }
+
             //const {name, inv_type, quantity, street, building, country, zipcode, latitude, longitude, photo}
         });
         
