@@ -85,4 +85,14 @@ module.exports = class MongoDBHelper {
         }
     }
 
+    //updateInventory
+    updateInventory = async (id, Inventory) => {
+        id = new ObjectId(id);
+        try{
+            return await this.client.db(this.databaseName).collection(this.dataCollectionName).updateOne({_id: id}, {$set: Inventory});
+        }catch(e){
+            console.error(e);
+        }
+    }
+
 }

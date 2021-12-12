@@ -84,6 +84,17 @@ module.exports = class InventoryApi{
             })
         });
 
+        this.app.get('/edit', this.auth, (req, res) => {
+            this.dbHelper.getInventoryById(req.query._id).then(array => {
+                let inventoryObj = array[0];
+                //check if the user is the owner
+                if(inventoryObj.manager != req.session.username){
+                    res.send("You are not the owner of this inventory<br><a href='/home'>back</a>");
+                }
+                res.render(path.join(__dirname, '../webComponent/edit.html'), {name: inventoryObj.name, type: inventoryObj.type, quantity: inventoryObj.quantity, photo: inventoryObj.photo, photo_minetype: inventoryObj.photo_mimetype, street: inventoryObj.inventory_address.street, building: inventoryObj.inventory_address.building, country: inventoryObj.inventory_address.country, zipcode: inventoryObj.inventory_address.zipcode, latitude: inventoryObj.inventory_address.latitude, longitude: inventoryObj.inventory_address.longitude, manager: inventoryObj.manager, id: inventoryObj._id});
+            })
+        });
+
         this.app.get('/delete', this.auth, (req, res) => {
             this.dbHelper.getInventoryById(req.query._id).then(array => {
                 let inventoryObj = array[0];
@@ -122,17 +133,6 @@ module.exports = class InventoryApi{
                     res.redirect('/login');
                 }
             });
-            
-
-            //todo remove hardcode testing account authentication
-            //todo compare username/password with database user record
-
-            // //testing session
-            // if(username === 'demo' && password === ''){
-            //     req.session.username = username;
-            //     return res.redirect('/home');
-            // }
-            // return res.redirect('/login');
         });
   
  
@@ -176,6 +176,35 @@ module.exports = class InventoryApi{
                 res.redirect('/home');
             });
             //const {name, inv_type, quantity, street, building, country, zipcode, latitude, longitude, photo}
+        });
+
+        this.app.post('/update', upload.single('photo'), this.auth, (req,res) => {
+            let inventoryObj = {
+                name: req.body.name,
+                type: req.body.type,
+                quantity: req.body.quantity,
+                inventory_address: {
+                    street: req.body.street,
+                    building: req.body.building,
+                    country: req.body.country,
+                    zipcode: req.body.zipcode,
+                    latitude: req.body.latitude,
+                    longitude: req.body.longitude
+                },
+                manager: req.session.username
+            }
+            //user have uploaded a new photo
+            if(req.file){
+                inventoryObj.photo = this.util.base64_encode(req.file.path);
+                inventoryObj.photo_mimetype = req.file.mimetype;
+                //delete file after photo has been converted to base64 and insert to database
+                fs.unlink(req.file.path, (err) => {
+                    if(err) throw err;
+                });
+            }
+            this.dbHelper.updateInventory(req.body._id, inventoryObj).then(result => {
+                res.redirect('/home');
+            });
         });
         
 
