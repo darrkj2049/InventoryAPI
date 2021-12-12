@@ -42,7 +42,7 @@ module.exports = class InventoryApi{
                 quantity: req.body.quantity,
                 photo: req.body.photo,
                 photo_base64: req.body.photo_base64,
-                inventory_address = {
+                inventory_address: {
                     street: req.body.street,
                     building: req.body.building,
                     country: req.body.country,

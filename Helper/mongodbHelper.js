@@ -66,10 +66,10 @@ module.exports = class MongoDBHelper {
         }
     }
 
-    //get User by name
-    getUserByName = async (name) => {
+    //get User by username
+    getUserByUsername = async (username) => {
         try{
-            return await this.client.db(this.databaseName).collection(this.dataCollectionName).find({name: name}).toArray();
+            return await this.client.db(this.databaseName).collection(this.dataCollectionName).find({username: username}).toArray();
         }catch(e){
             console.error(e);
         }
