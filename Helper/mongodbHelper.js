@@ -29,6 +29,15 @@ module.exports = class MongoDBHelper {
         }
     }
 
+    //fetch inventory by criteria
+    getInventoryByName = async (criteria) => {
+        try{
+            return await this.client.db(this.databaseName).collection(this.dataCollectionName).find({name: criteria["name"]}).toArray();
+        }catch(e){
+            console.error(e);
+        }
+    }
+
     //fetch all inventory
     getAllInventory = async () => {
         try{
