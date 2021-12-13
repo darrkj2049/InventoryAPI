@@ -206,6 +206,28 @@ module.exports = class InventoryApi{
                 res.redirect('/home');
             });
         });
+
+        this.app.get('/api/inventory/name/:name', (req,res) => {
+            if (req.params.name) {
+                let criteria = {};
+                criteria['name'] = req.params.name;
+                const client = new MongoDBHelper(this.config.mongoDBuri);
+                client.connect((err) => {
+                    assert.equal(null, err);
+                    console.log("Connected successfully to server");
+                    const db = client.db(databaseName);
+        
+                    findDocument(db, criteria, (docs) => {
+                        client.close();
+                        console.log("Closed DB connection");
+                        res.status(200).json(docs);
+                    });
+                });
+            } else {
+                res.status(500).json({"error": "missing name"});
+            }
+        }
+        )
         
 
         //start app
