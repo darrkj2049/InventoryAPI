@@ -229,6 +229,19 @@ module.exports = class InventoryApi{
         }
         )
         
+        //restful api for getting inventory by name
+        this.app.get('/api/inventory/name/:name', (req, res) => {
+            if(req.params.name){
+                let criteria = {};
+                criteria["name"] = req.params.name;
+                this.dbHelper.getInventoryByName(criteria).then(record => {
+                    res.status(200).json(record[0]);
+                });
+            } else {
+                res.tatus(500).json({"error": 'missing name'});
+            }
+        });
+
 
         //start app
         this.app.listen(this.config.serverPort, () => console.log('Listening on port ' + this.config.serverPort));
